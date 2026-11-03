@@ -343,7 +343,10 @@ export function OperatorDashboard({ slotId }: { slotId: string }) {
   if (history.isError) return <ErrorState error={history.error} context="Operator history" />;
   if (days.length === 0) return null;
 
-  const all = totals(days);
+  // All-time figures include owed epochs with no close time yet, so they match the verdict (#109).
+  const undated = history.data?.data.undated;
+  const all = totals(days, undated);
+  const undatedEpochs = undated?.epochs ?? 0;
   // The newest row the chain has, which is only "today" when an epoch closed today.
   const latest = days[days.length - 1] as HistoryDay;
   const latestIsToday = isToday(latest.day);
@@ -361,7 +364,7 @@ export function OperatorDashboard({ slotId }: { slotId: string }) {
     { label: 'Owed to this slot', value: `${formatNumber(all.entitlement)} TWLT`, hint: 'Reward the chain allotted to this slot across every owed epoch.' },
     { label: 'Kept by operator', value: `${formatNumber(all.kept)} TWLT`, hint: 'Settlement remainder sent to the operator: integer-division residue and any budget not paid to miners (for example when no miner qualified).' },
     { label: 'Share to miners (30d)', value: share30 === null ? '—' : `${share30.toFixed(1)}%`, hint: 'Share of the last 30 days of settled rewards that reached miners.' },
-    { label: 'Epochs settled', value: `${formatNumber(all.settledEpochs)} / ${formatNumber(all.epochs)}`, hint: 'Owed epochs with a settlement on chain.' },
+    { label: 'Epochs settled', value: `${formatNumber(all.settledEpochs)} / ${formatNumber(all.epochs)}`, hint: `Owed epochs with a settlement on chain.${undatedEpochs > 0 ? ` Includes ${undatedEpochs} epoch${undatedEpochs === 1 ? '' : 's'} with no close time yet, which appear in no day of the history.` : ''}` },
     { label: 'Miners ever paid', value: p ? `${p.paidAll}` : formatNumber(all.miners), hint: `Distinct addresses paid by this slot.${p ? ` ${p.paid30} in the last 30 days.` : ''}` },
     {
       label: 'Miners enrolled now',
