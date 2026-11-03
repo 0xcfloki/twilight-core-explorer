@@ -10,9 +10,10 @@ its release and commit at `GET /api/v1/status` (`data.build`).
 
 ### Fixed
 - The rewards projection now records an epoch's close time (`RewardEpochProjection.blockTime`) from
-  the block at its close height, and a migration backfills epochs projected before this. The
-  `coalesce` fallbacks on the `Block` join stay as a safety net for epochs whose close block is
-  not indexed (#113).
+  the block at its close height, and a migration backfills epochs projected before this.
+  Re-projecting an epoch whose close block is not indexed keeps a time already recorded. The
+  `coalesce` fallbacks to the `Block` join stay as a safety net for epochs with no recorded time;
+  an epoch is undated only when neither gives one (#113).
 
 ## [1.1.0] — 2026-10-29
 
