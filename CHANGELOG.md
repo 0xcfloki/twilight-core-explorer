@@ -8,6 +8,12 @@ its release and commit at `GET /api/v1/status` (`data.build`).
 
 ## [Unreleased]
 
+### Fixed
+- The rewards projection now records an epoch's close time (`RewardEpochProjection.blockTime`) from
+  the block at its close height, and a migration backfills epochs projected before this. The
+  `coalesce` fallbacks on the `Block` join stay as a safety net for epochs whose close block is
+  not indexed (#113).
+
 ## [1.1.0] — 2026-10-29
 
 The operator dashboard and the twilight.org design. The first release deployed with the tag-based
